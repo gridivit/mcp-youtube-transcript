@@ -1,9 +1,10 @@
 from dataclasses import dataclass
-from urllib.parse import  parse_qs, urlparse
+from urllib.parse import parse_qs, urlparse
 
 from youtube_transcript_api import YouTubeTranscriptApi
 
 _ID_LENGTH = 11
+_MIN_PREFIXED_SEGMENTS = 2
 _ID_CHARS = frozenset(
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_"
 )
@@ -16,6 +17,7 @@ _PATH_PREFIXES = frozenset(
     {"shorts", "embed", "live", "v"}
 )
 
+
 @dataclass(frozen=True)
 class TranscriptLanguage:
 
@@ -24,8 +26,10 @@ class TranscriptLanguage:
     is_generated: bool
     is_translatable: bool
 
+
 def _looks_like_id(value: str) -> bool:
     return len(value) == _ID_LENGTH and all(char in _ID_CHARS for char in value)
+
 
 def extract_video_id(url: str) -> str:
 
@@ -33,7 +37,6 @@ def extract_video_id(url: str) -> str:
 
     if _looks_like_id(candidate):
         return candidate
-
 
     if "://" not in candidate:
         candidate = "https://" + candidate
@@ -53,7 +56,7 @@ def extract_video_id(url: str) -> str:
             return from_query
 
         if (
-            len(segments) >= 2
+            len(segments) >= _MIN_PREFIXED_SEGMENTS
             and segments[0] in _PATH_PREFIXES
             and _looks_like_id(segments[1])
         ):
@@ -64,6 +67,7 @@ def extract_video_id(url: str) -> str:
         "https://www.youtube.com/watch?v=..., https://youtu.be/..., "
         "https://www.youtube.com/shorts/..., or a bare 11-character ID."
     )
+
 
 def list_languages(video_id: str) -> list[TranscriptLanguage]:
 
@@ -78,6 +82,7 @@ def list_languages(video_id: str) -> list[TranscriptLanguage]:
         )
         for transcript in api.list(video_id)
     ]
+
 
 def fetch_text(video_id: str, language: str) -> str:
     api = YouTubeTranscriptApi()

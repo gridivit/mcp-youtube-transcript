@@ -3,11 +3,7 @@
 import logging
 
 from mcp.server import MCPServer
-from youtube_transcript_api import (
-    CouldNotRetrieveTranscript,
-    NoTranscriptFound,
-    TranscriptsDisabled
-)
+from youtube_transcript_api import CouldNotRetrieveTranscript, NoTranscriptFound, TranscriptsDisabled
 
 from .youtube import extract_video_id, fetch_text, list_languages
 
@@ -31,7 +27,7 @@ def list_transcript_languages(url: str) -> str:
         One line per track: "<code> - <name> (manual|auto-generated)".
     """
     video_id = extract_video_id(url)
-    logger.info(f"listing languages for {video_id}")
+    logger.info("listing languages for %s", video_id)
 
     languages = list_languages(video_id)
     if not languages:
@@ -63,7 +59,7 @@ def get_transcript(url: str, language: str) -> str:
         The transcript as a single plain-text string.
     """
     video_id = extract_video_id(url)
-    logger.info(f"fetching transcript for {video_id} in {language}")
+    logger.info("fetching transcript for %s in %s", video_id, language)
 
     try:
         return fetch_text(video_id, language)
