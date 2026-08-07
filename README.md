@@ -94,5 +94,3 @@ Run the test client to inspect the protocol directly:
 ```
 npx @modelcontextprotocol/inspector uv run mcp-youtube-transcript
 ```
-
-Design notes and a step-by-step build log live in [docs/](docs/OVERVIEW.md).
